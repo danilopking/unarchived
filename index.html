@@ -536,7 +536,7 @@ const hashView=()=>{const h=location.hash.slice(1);return ['planner','ideas','ta
 const S={db:null,assets:null,ok:false,loaded:false,stale:false,
   items:[],ideas:[],folders:[],tasks:[],tags:[],metrics:[],daily:[],cntLocal:{},planAnchor:today(),settingsDoc:null,
   view:hashView(),mode:'week',anchor:today(),show:{substack:true,instagram:true},
-  folder:null,resWeek:iso(mondayOf(today())),pending:false};
+  folder:null,resWeek:iso(mondayOf(today())),pending:false,resDraft:{}};
 const settings=()=>{const s=S.settingsDoc||{};return {
   rubrics:Array.isArray(s.rubrics)?s.rubrics:DEFAULTS.rubrics,
   formats:Array.isArray(s.formats)?s.formats:DEFAULTS.formats,
@@ -904,12 +904,12 @@ function barChart(labels,vals,color){const W=520,H=150,L=40,R=14,T=14,B=26;const
     ${labels.map((l,i)=>`<text x="${X(i).toFixed(1)}" y="${H-6}" class="ax" text-anchor="middle">${esc(l.split(' – ')[0])}</text>`).join('')}
   </svg>`;}
 function renderResults(bar,c){
-  const st=settings();const w=S.resWeek;const doc=S.metrics.find(m=>m.id===w);const vals=(doc&&doc.values)||{};
+  const st=settings();const w=S.resWeek;const doc=S.metrics.find(m=>m.id===w);const vals=(doc&&doc.values)||{};const draft=S.resDraft[w]||{};
   bar.innerHTML=`<h1>Результаты</h1>`;
   const weeks=resWeeks();const s=parse(w),e=addDays(s,6);
   const entry=`<div class="panel"><h2>Внести неделю ${s.getDate()} ${MG[s.getMonth()]} – ${e.getDate()} ${MG[e.getMonth()]}</h2>
     <div class="lrow" style="margin-bottom:8px"><button class="btn sm" data-act="resprev">${ic('left')}Предыдущая</button><button class="btn sm" data-act="resnext">Следующая${ic('right')}</button><button class="btn sm text" data-act="rescur">Текущая</button></div>
-    <div class="row">${st.metrics.map(m=>`<label class="field"><span>${platDot(metPlat(m))} ${esc(m.name)}</span><input class="inp" type="number" step="any" data-metric="${esc(m.id)}" value="${vals[m.id]!=null?esc(vals[m.id]):''}"></label>`).join('')}</div>
+    <div class="row">${st.metrics.map(m=>`<label class="field"><span>${platDot(metPlat(m))} ${esc(m.name)}</span><input class="inp" type="number" step="any" data-metric="${esc(m.id)}" value="${draft[m.id]!=null?esc(draft[m.id]):vals[m.id]!=null?esc(vals[m.id]):''}"></label>`).join('')}</div>
     <div class="lrow" style="margin-top:12px"><button class="btn primary" data-act="ressave">Сохранить неделю</button>${doc?'<span class="hint">Данные за эту неделю уже внесены, можно поправить.</span>':''}</div></div>`;
   if(!weeks.length){c.innerHTML=reminderBanner()+entry+'<div class="empty">Динамика появится после первой внесённой недели.</div>';return}
   const card=m=>{const pl=metPlat(m),col=pl==='instagram'?'var(--ig)':'var(--ss)',pct=metPct(m);
@@ -1029,7 +1029,7 @@ if(await W(S.db.doc('ideas/'+id).delete())){await dropAssets(media.map(m=>m.id).
   ressave:async()=>{const values={};document.querySelectorAll('[data-metric]').forEach(el=>{if(el.value!=='')values[el.dataset.metric]=Number(el.value)});
     if(!Object.keys(values).length){toast('Заполните хотя бы одно поле.');return}
     document.activeElement&&document.activeElement.blur();
-    if(await W(S.db.doc('metrics/'+S.resWeek).set({week:S.resWeek,values,updatedAt:Date.now()})))toast('Неделя сохранена')},
+    const wk=S.resWeek;if(await W(S.db.doc('metrics/'+wk).set({week:wk,values,updatedAt:Date.now()}))){delete S.resDraft[wk];toast('Неделя сохранена');render()}},
   rubadd:async()=>{const el=document.getElementById('rubnew');const name=el.value.trim();if(!name)return;el.value='';el.blur();await saveSettings({rubrics:settings().rubrics.concat({id:'r'+uid(),name})})},
   rubdel:async t=>{const r=settings().rubrics.find(x=>x.id===t.dataset.id);if(!r)return;const used=S.items.filter(i=>i.rubricId===r.id).length;
     if(!await confirmDlg(used?`Удалить рубрику «${r.name}»? У ${used} публикаций рубрика станет пустой.`:`Удалить рубрику «${r.name}»?`))return;
@@ -1070,7 +1070,9 @@ document.addEventListener('change',async e=>{const el=e.target;const st=settings
   else if(el.hasAttribute('data-remind')){await saveSettings({reminderDay:Number(el.value)})}
   else if(el.dataset.tagname){const v=el.value.trim();if(v)await W(S.db.doc('tags/'+el.dataset.tagname).update({name:v}))}
   else if(el.dataset.tagtext){await W(S.db.doc('tags/'+el.dataset.tagtext).update({tags:el.value}))}});
-document.addEventListener('focusout',()=>{setTimeout(()=>{const a=document.activeElement;if(S.pending&&!(a&&a.closest&&a.closest('#content')&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))&&!ED)render()},0)});
+document.addEventListener('focusout',e=>{const rt=e.relatedTarget;const toBtn=rt&&rt.closest&&rt.closest('button,a,[data-act]');setTimeout(()=>{const a=document.activeElement;if(S.pending&&!(a&&a.closest&&a.closest('#content')&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))&&!ED)render()},toBtn?600:0)});
+/* черновик недели в «Результатах»: введённые цифры переживают фоновое обновление */
+document.addEventListener('input',e=>{const el=e.target;if(el&&el.dataset&&el.dataset.metric){const d=S.resDraft[S.resWeek]=S.resDraft[S.resWeek]||{};d[el.dataset.metric]=el.value}});
 window.addEventListener('hashchange',()=>{const v=hashView();if(v!==S.view){S.view=v;render()}});
 
 /* ---------- boot ---------- */
