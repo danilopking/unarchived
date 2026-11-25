@@ -513,11 +513,12 @@ const DEFAULTS={
   norms:{enabled:true,notesMin:3,notesMax:4,reelsMin:5,reelsMax:7,carMin:2,carMax:3,stories:true},
   metrics:[
     {id:'ss_free',name:'Substack: бесплатные подписчики'},
+    {id:'ss_followers',name:'Substack: фолловеры'},
     {id:'ss_paid',name:'Substack: платные подписчики'},
     {id:'ss_open',name:'Substack: открываемость, %'},
     {id:'ig_followers',name:'Instagram: подписчики'},
-    {id:'ig_reach',name:'Instagram: охват за неделю'},
-    {id:'ig_shares',name:'Instagram: отправки за неделю'}
+    {id:'ss_reach',name:'Substack: охват за месяц'},
+    {id:'ig_reach',name:'Instagram: охват за неделю'}
   ],
   reminderDay:5,
   plan:{enabled:true,
@@ -924,12 +925,12 @@ function renderResults(bar,c){
   const growth=(id,pl)=>{const m=st.metrics.find(x=>x.id===id);if(!m)return '';const pts=weeks.map(x=>[x,metVal(x,id)]).filter(x=>x[1]!=null);
     const labels=[],vs=[];for(let i=1;i<pts.length;i++){labels.push(shortDate(pts[i][0]).replace(/ (\S{3})\S*/,' $1')+(Math.round((parse(pts[i][0])-parse(pts[i-1][0]))/6048e5)>1?' *':''));vs.push(pts[i][1]-pts[i-1][1])}
     return `<div class="mcard"><div class="mhd">${platDot(pl)}<span class="n">${esc(PLAT[pl])}: ${esc(metShort(m).toLowerCase())}</span></div>${barChart(labels,vs,pl==='instagram'?'var(--ig)':'var(--ss)')}</div>`};
-  const gr=[growth('ss_free','substack'),growth('ig_followers','instagram')].join('');
+  const gr=[growth('ss_free','substack'),growth('ss_followers','substack'),growth('ig_followers','instagram')].join('');
   const tbl=`<div class="panel scroll-x"><h2>Все недели</h2><table class="tbl"><thead><tr><th>Неделя</th>${st.metrics.map(m=>`<th>${esc(m.name)}</th>`).join('')}</tr></thead><tbody>
     ${weeks.slice().reverse().map((x,ri,arr)=>{const has=S.metrics.some(d=>d.id===x);return `<tr${has?'':' class="miss"'}><td>${shortDate(x)}</td>${st.metrics.map(m=>{const v=metVal(x,m.id);const pv=arr[ri+1]?metVal(arr[ri+1],m.id):null;const d=v!=null&&pv!=null?v-pv:null;
       return `<td>${v==null?(has?'—':'не внесено'):fmtN(v)}${d?`<small class="${d>0?'up':'down'}">${d>0?'+':''}${fmtN(d)}</small>`:''}</td>`}).join('')}</tr>`}).join('')}</tbody></table>
     <div class="hint" style="margin-top:8px">Пропущенные недели на графиках — разрыв линии. В приросте «*» — изменение сразу за несколько недель.</div></div>`;
-  c.innerHTML=reminderBanner()+groups+(gr?`<h2 class="grp">Прирост подписчиков по неделям</h2><div class="mgrid">${gr}</div>`:'')+tbl+entry;
+  c.innerHTML=reminderBanner()+groups+(gr?`<h2 class="grp">Прирост подписчиков и фолловеров по неделям</h2><div class="mgrid">${gr}</div>`:'')+tbl+entry;
   wireTips(c);}
 function wireTips(c){let tip=document.getElementById('ctip');if(!tip){tip=document.createElement('div');tip.id='ctip';tip.setAttribute('role','tooltip');document.body.appendChild(tip)}
   c.querySelectorAll('[data-tip]').forEach(el=>{el.addEventListener('mouseenter',()=>{tip.textContent=el.dataset.tip;tip.hidden=false;const r=el.getBoundingClientRect();
