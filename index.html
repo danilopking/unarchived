@@ -449,6 +449,15 @@ svg.lc .lv{fill:var(--text);font-size:11.5px;font-weight:600}
 svg.lc .hit{fill:transparent;cursor:default}
 #ctip{position:fixed;z-index:90;background:var(--accent);color:var(--on-accent);font-size:12px;padding:5px 9px;border-radius:8px;pointer-events:none;white-space:nowrap}
 #ctip[hidden]{display:none}
+#ctxm{position:fixed;z-index:95;min-width:210px;background:var(--bg);border-radius:14px;box-shadow:0 0 0 1px var(--line),0 12px 32px rgba(0,0,0,.14);padding:6px}
+#ctxm[hidden]{display:none}
+#ctxm .ch{font-size:11.5px;color:var(--muted);padding:6px 10px 4px}
+#ctxm button{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;text-align:left;padding:8px 10px;border-radius:9px;font:inherit;color:var(--text);cursor:pointer}
+#ctxm button:hover,#ctxm button:focus-visible{background:var(--surface2);outline:0}
+#ctxm .pd{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+#ctxm hr{border:0;border-top:1px solid var(--line);margin:4px 6px}
+.daybody{cursor:cell;min-height:40px}
+
 .tbl small{display:block;font-size:10.5px}.tbl small.up{color:var(--ok)}.tbl small.down{color:var(--warn)}
 .tbl tr.miss td{color:var(--muted)}
 </style>
@@ -800,16 +809,16 @@ function renderPlanner(bar,c){
     strip=`<div class="tiles5">${strip}<div class="kpi legendk">${LEGEND}</div></div>`;
     c.innerHTML=reminderBanner()+strip+`<div class="week">${days.map((d,k)=>{const ds=iso(d);
       const its=vis.filter(i=>i.date===ds).sort(sortItems);const gaps=dayGaps(ds);
-      return `<section class="day${ds<t?' past':''}" data-drop="${ds}">
+      return `<section class="day${ds<t?' past':''}" data-drop="${ds}" data-newday="${ds}">
         <div class="dayhead"><span class="wd">${WD[k]}</span><span class="dn${ds===t?' today':''}">${d.getDate()}</span><div class="gaps">${gaps.map(g=>gapPill(g,ds)).join('')}</div></div>
-        <div class="daybody">${its.map(cardHtml).join('')}</div>
+        <div class="daybody" data-newday="${ds}" title="Двойной клик — новая публикация, правый клик — выбрать платформу">${its.map(cardHtml).join('')}</div>
         <button class="addday" data-act="new" data-date="${ds}">+ Добавить</button></section>`}).join('')}</div>`;
   }else{
     const a=S.anchor;const first=new Date(a.getFullYear(),a.getMonth(),1);const s=mondayOf(first);
     let html=WD.map(w=>`<div class="mh">${w}</div>`).join('');
     for(let k=0;k<42;k++){const d=addDays(s,k);const ds=iso(d);const its=vis.filter(i=>i.date===ds).sort(sortItems);
       const gap=ds>=t&&dayGaps(ds).some(g=>g.bad&&!g.cnt);const shown=its.slice(0,4);
-      html+=`<div class="mc${d.getMonth()!==a.getMonth()?' out':''}" data-act="new" data-date="${ds}" data-drop="${ds}">
+      html+=`<div class="mc${d.getMonth()!==a.getMonth()?' out':''}" data-act="new" data-date="${ds}" data-drop="${ds}" data-newday="${ds}" title="Клик — новая публикация, правый клик — выбрать платформу">
         <div class="mtop"><button class="mn${ds===t?' today':''}" data-act="gotoweek" data-date="${ds}" aria-label="Неделя с ${d.getDate()} ${MG[d.getMonth()]}">${d.getDate()}</button>${gap?'<span class="gapdot" title="Ниже нормы"></span>':''}</div>
         ${shown.map(i=>`<div class="mi ${i.platform} st-${esc(i.status)}" draggable="true" data-act="open" data-id="${esc(i.id)}" title="${esc(fmtName(i.format))}: ${esc(i.title||'')}"><i></i>${esc((i.time?i.time+' ':'')+(i.title||fmtName(i.format)||'Без темы'))}</div>`).join('')}
         ${its.length>4?`<button class="more btn text sm" data-act="gotoweek" data-date="${ds}">ещё ${its.length-4}</button>`:''}</div>`;}
@@ -970,6 +979,7 @@ async function saveSettings(patch){const next=Object.assign(settings(),patch);re
 const ACT={
   go:t=>{S.view=t.dataset.v;location.hash=S.view;render()},
   new:t=>openItem(null,t.dataset.date),
+  newp:t=>{ctxClose();openItem(null,t.dataset.date,t.dataset.v?{platform:t.dataset.v}:{})},
   open:t=>openItem(t.dataset.id),
   today:()=>{S.anchor=today();render()},
   prev:()=>{const a=S.anchor;S.anchor=S.mode==='week'?addDays(a,-7):new Date(a.getFullYear(),a.getMonth()-1,1);render()},
@@ -1056,6 +1066,20 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('[data-act]');if(!t)return;
   if(t.tagName==='INPUT'&&t.type==='checkbox'){}else if(t.tagName!=='LABEL')e.preventDefault();
   const f=ACT[t.dataset.act];if(f)f(t,e);});
+/* создание публикации прямо в календаре: двойной клик по пустому месту дня или меню по правой кнопке */
+const onFree=el=>!el.closest('.card,.mi,button,a,input,select,textarea,.pill,.gaps,.dayhead .dn');
+document.addEventListener('dblclick',e=>{if(ED||S.view!=='planner')return;const d=e.target.closest('[data-newday]');if(!d||!onFree(e.target)||e.target.closest('.mc'))return;
+  e.preventDefault();window.getSelection&&window.getSelection().removeAllRanges();openItem(null,d.dataset.newday)});
+function ctxClose(){const m=document.getElementById('ctxm');if(m)m.hidden=true}
+document.addEventListener('contextmenu',e=>{if(ED||S.view!=='planner')return;const d=e.target.closest('[data-newday]');if(!d||e.target.closest('.card,.mi,input,textarea,select'))return;
+  e.preventDefault();let m=document.getElementById('ctxm');if(!m){m=document.createElement('div');m.id='ctxm';m.setAttribute('role','menu');document.body.appendChild(m)}
+  const ds=d.dataset.newday,dt=parse(ds);
+  m.innerHTML=`<div class="ch">Новая публикация · ${dt.getDate()} ${MG[dt.getMonth()]}</div>${Object.keys(PLAT).map(p=>`<button role="menuitem" data-act="newp" data-date="${ds}" data-v="${p}">${platDot(p)}${PLAT[p]}</button>`).join('')}`;
+  m.hidden=false;const W=m.offsetWidth,H=m.offsetHeight;m.style.left=Math.min(e.clientX,innerWidth-W-8)+'px';m.style.top=Math.min(e.clientY,innerHeight-H-8)+'px';
+  const b=m.querySelector('button');b&&b.focus({preventScroll:true})});
+document.addEventListener('mousedown',e=>{if(!e.target.closest('#ctxm'))ctxClose()},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')ctxClose()});
+window.addEventListener('blur',ctxClose);document.addEventListener('scroll',ctxClose,true);
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&document.querySelector('#modal .scrim')){if(ED)closeEditor();else if(document.querySelector('#modal [data-c]'))document.querySelector('#modal [data-c="0"]').click();else closeModal()}
   if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('card')){ACT.open(e.target)}
