@@ -13,7 +13,7 @@
 :root{
   --bg:#ffffff; --surface:#f8fafd; --surface2:#eef2f8; --line:#dde3ea; --line2:#c4c7c5;
   --text:#1f1f1f; --muted:#5f6368; --accent:#6750a4; --accent-soft:#e9ddff; --on-accent:#ffffff;
-  --ss:#e8590c; --ss-soft:#fff1e7; --ig:#0277bd; --ig-soft:#e1f3fc;
+  --ss:#e8590c; --ss-soft:#fff1e7; --ig:#0277bd; --ig-soft:#e1f3fc; --th:#3a3f48; --th-soft:#eceef1;
   --amber:#8a5a00; --amber-soft:#ffefc2;
   --warn:#b3261e; --warn-soft:#fce8e6; --ok:#146c2e; --ok-soft:#e6f4ea;
   --shadow:0 1px 3px rgba(60,64,67,.25),0 4px 10px rgba(60,64,67,.12);
@@ -23,14 +23,14 @@
 @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
   --bg:#1e1f20; --surface:#131314; --surface2:#28292a; --line:#3c4043; --line2:#5f6368;
   --text:#e3e3e3; --muted:#a8acb1; --accent:#d0bcff; --accent-soft:#4f378b; --on-accent:#21005d;
-  --ss:#ff8a4c; --ss-soft:#3a2418; --ig:#6cc4f5; --ig-soft:#10303f;
+  --ss:#ff8a4c; --ss-soft:#3a2418; --ig:#6cc4f5; --ig-soft:#10303f; --th:#c4cad3; --th-soft:#2a2e35;
   --amber:#ffd16a; --amber-soft:#3d2f00;
   --warn:#f2b8b5; --warn-soft:#4a1c1a; --ok:#6dd58c; --ok-soft:#173a22;
   --on-pc:#1e1f20; --shadow:0 1px 3px rgba(0,0,0,.6),0 4px 12px rgba(0,0,0,.4); color-scheme:dark; } }
 :root[data-theme="dark"]{
   --bg:#1e1f20; --surface:#131314; --surface2:#28292a; --line:#3c4043; --line2:#5f6368;
   --text:#e3e3e3; --muted:#a8acb1; --accent:#d0bcff; --accent-soft:#4f378b; --on-accent:#21005d;
-  --ss:#ff8a4c; --ss-soft:#3a2418; --ig:#6cc4f5; --ig-soft:#10303f;
+  --ss:#ff8a4c; --ss-soft:#3a2418; --ig:#6cc4f5; --ig-soft:#10303f; --th:#c4cad3; --th-soft:#2a2e35;
   --amber:#ffd16a; --amber-soft:#3d2f00;
   --warn:#f2b8b5; --warn-soft:#4a1c1a; --ok:#6dd58c; --ok-soft:#173a22;
   --on-pc:#1e1f20; --shadow:0 1px 3px rgba(0,0,0,.6),0 4px 12px rgba(0,0,0,.4); color-scheme:dark; }
@@ -109,6 +109,7 @@ svg.i{width:20px;height:20px;fill:currentColor;flex:none}
 .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:8px 0 0 8px;background:var(--pc)}
 .card.substack{--pc:var(--ss);background:var(--ss-soft)}
 .card.instagram{--pc:var(--ig);background:var(--ig-soft)}
+.card.threads{--pc:var(--th);background:var(--th-soft)}
 .card:hover{box-shadow:var(--shadow)}
 /* status: idea = empty slot, planned = queued in scheduler, published = done */
 .card.st-idea{background:transparent;border:1.5px dashed var(--pc)}
@@ -149,8 +150,8 @@ svg.i{width:20px;height:20px;fill:currentColor;flex:none}
 .mi{display:flex;align-items:center;gap:5px;font-size:12px;border-radius:5px;padding:1px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
 .mi:hover{background:var(--surface2)}
 .mi i{width:8px;height:8px;border-radius:50%;flex:none;background:var(--pc)}
-.mi.substack{--pc:var(--ss)} .mi.instagram{--pc:var(--ig)}
-.mi.substack{--pcs:var(--ss-soft)} .mi.instagram{--pcs:var(--ig-soft)}
+.mi.substack{--pc:var(--ss)} .mi.instagram{--pc:var(--ig)} .mi.threads{--pc:var(--th)}
+.mi.substack{--pcs:var(--ss-soft)} .mi.instagram{--pcs:var(--ig-soft)} .mi.threads{--pcs:var(--th-soft)}
 .mi.st-idea{color:var(--muted);font-style:italic}
 .mi.st-idea i{background:transparent;outline:1.5px dashed var(--pc)}
 .mi.st-planned{background:var(--pcs)}
@@ -176,6 +177,7 @@ textarea.inp{resize:vertical;min-height:120px;line-height:1.5}
 .title-inp:focus{outline:0;border-bottom:2px solid var(--accent)}
 .platseg button[data-v="substack"][aria-pressed="true"]{background:var(--ss-soft);color:var(--ss)}
 .platseg button[data-v="instagram"][aria-pressed="true"]{background:var(--ig-soft);color:var(--ig)}
+.platseg button[data-v="threads"][aria-pressed="true"]{background:var(--th-soft);color:var(--th)}
 .textwrap{position:relative}
 .textwrap .copy{position:absolute;right:6px;top:6px}
 .media{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start}
@@ -279,14 +281,14 @@ button.pill:hover{filter:brightness(.96)}
 
 /* ===== redesign: soft dashboard, near-white background with hairline rings ===== */
 :root{--bg:#ffffff;--surface:#fafafa;--surface2:#f4f5f7;--line:#ececef;--line2:#dfe2e7;--text:#151a24;--muted:#8a909c;
- --accent:#151a24;--accent-soft:#ffffff;--on-accent:#ffffff;--ss:#f26b21;--ss-soft:#fff1e8;--ig:#3b7be0;--ig-soft:#eaf1fc;
+ --accent:#151a24;--accent-soft:#ffffff;--on-accent:#ffffff;--ss:#f26b21;--ss-soft:#fff1e8;--ig:#3b7be0;--ig-soft:#eaf1fc;--th:#3a3f48;--th-soft:#eceef1;
  --amber:#9a6b00;--amber-soft:#fdf3d4;--ok:#2f8f5b;--ok-soft:#e6f4ec;--on-pc:#ffffff;--r:20px;--ring:0 0 0 1px #ececef;--shadow:0 0 0 1px #ececef}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
  --bg:#1f2228;--surface:#16181d;--surface2:#262a32;--line:#2b2f37;--line2:#363b45;--text:#eef0f4;--muted:#8d93a0;
- --accent:#eef0f4;--accent-soft:#1f2228;--on-accent:#16181d;--ss:#ff8a4c;--ss-soft:#3a2416;--ig:#6aa7ff;--ig-soft:#16263f;
+ --accent:#eef0f4;--accent-soft:#1f2228;--on-accent:#16181d;--ss:#ff8a4c;--ss-soft:#3a2416;--ig:#6aa7ff;--ig-soft:#16263f;--th:#c4cad3;--th-soft:#2a2e35;
  --amber:#ffd36b;--amber-soft:#3a2e0e;--ok:#5ed38f;--ok-soft:#123222;--on-pc:#16181d;--ring:0 0 0 1px #2b2f37;--shadow:0 0 0 1px #2b2f37}}
 :root[data-theme="dark"]{--bg:#1f2228;--surface:#16181d;--surface2:#262a32;--line:#2b2f37;--line2:#363b45;--text:#eef0f4;--muted:#8d93a0;
- --accent:#eef0f4;--accent-soft:#1f2228;--on-accent:#16181d;--ss:#ff8a4c;--ss-soft:#3a2416;--ig:#6aa7ff;--ig-soft:#16263f;
+ --accent:#eef0f4;--accent-soft:#1f2228;--on-accent:#16181d;--ss:#ff8a4c;--ss-soft:#3a2416;--ig:#6aa7ff;--ig-soft:#16263f;--th:#c4cad3;--th-soft:#2a2e35;
  --amber:#ffd36b;--amber-soft:#3a2e0e;--ok:#5ed38f;--ok-soft:#123222;--on-pc:#16181d;--ring:0 0 0 1px #2b2f37;--shadow:0 0 0 1px #2b2f37}
 body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;letter-spacing:-.01em;background:var(--surface)}
 .app{grid-template-columns:236px 1fr}
@@ -323,6 +325,8 @@ body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fo
 .platseg button[aria-pressed="true"]{color:#fff!important}
 .platseg button[data-v="substack"][aria-pressed="true"]{background:var(--ss)!important}
 .platseg button[data-v="instagram"][aria-pressed="true"]{background:var(--ig)!important}
+.platseg button[data-v="threads"][aria-pressed="true"]{background:var(--th)!important;color:var(--on-pc)!important}
+.platseg{display:flex;width:100%}.platseg button{flex:1 1 0;min-width:0;padding:6px 6px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .content{padding:0 6px 6px}
 .banner{border-radius:16px;box-shadow:var(--ring);background:var(--bg)}
 /* KPI tiles */
@@ -361,6 +365,7 @@ button.kpi:hover{box-shadow:0 0 0 1px var(--line2)}
 .card .t{font-size:12.5px;font-weight:500}
 .card.substack.st-planned{background:var(--ss-soft)!important;border-color:transparent}
 .card.instagram.st-planned{background:var(--ig-soft)!important;border-color:transparent}
+.card.threads.st-planned{background:var(--th-soft)!important;border-color:transparent}
 .card.st-idea{border:1.5px dashed color-mix(in srgb,var(--pc) 55%,transparent);background:transparent!important}
 .card.st-published{background:var(--pc)!important;border-color:transparent}
 .card.st-published .meta::before{background:var(--on-pc)}
@@ -496,7 +501,9 @@ const MG=['января','февраля','марта','апреля','мая','
 const MN=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const WD=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 const WDF=['понедельник','вторник','среда','четверг','пятница','суббота','воскресенье'];
-const PLAT={substack:'Substack',instagram:'Instagram'};
+const PLAT={substack:'Substack',instagram:'Instagram',threads:'Threads'};
+const PVAR={substack:'ss',instagram:'ig',threads:'th'};
+const pcol=p=>`var(--${PVAR[p]||'ss'})`;
 const STATUS=[['idea','Идея — пустой слот'],['planned','Запланировано — в отложке'],['published','Опубликовано — вышло']];
 const shortDate=s=>{const d=parse(s);return `${d.getDate()} ${MG[d.getMonth()]}`};
 
@@ -508,7 +515,8 @@ const DEFAULTS={
     {id:'reel',name:'Reel',platform:'instagram'},
     {id:'carousel',name:'Карусель',platform:'instagram'},
     {id:'post',name:'Пост',platform:'instagram'},
-    {id:'stories',name:'Stories',platform:'instagram'}
+    {id:'stories',name:'Stories',platform:'instagram'},
+    {id:'th_post',name:'Пост',platform:'threads'}
   ],
   norms:{enabled:true,notesMin:3,notesMax:4,reelsMin:5,reelsMax:7,carMin:2,carMax:3,stories:true},
   metrics:[
@@ -518,7 +526,9 @@ const DEFAULTS={
     {id:'ss_open',name:'Substack: открываемость, %'},
     {id:'ig_followers',name:'Instagram: подписчики'},
     {id:'ss_reach',name:'Substack: охват за месяц'},
-    {id:'ig_reach',name:'Instagram: охват за неделю'}
+    {id:'ig_reach',name:'Instagram: охват за неделю'},
+    {id:'th_followers',name:'Threads: подписчики'},
+    {id:'th_views',name:'Threads: просмотры за неделю'}
   ],
   reminderDay:5,
   plan:{enabled:true,
@@ -535,7 +545,7 @@ const DEFAULTS={
 const hashView=()=>{const h=location.hash.slice(1);return ['planner','ideas','tags','results','lists'].includes(h)?h:'planner'};
 const S={db:null,assets:null,ok:false,loaded:false,stale:false,
   items:[],ideas:[],folders:[],tasks:[],tags:[],metrics:[],daily:[],cntLocal:{},planAnchor:today(),settingsDoc:null,
-  view:hashView(),mode:'week',anchor:today(),show:{substack:true,instagram:true},
+  view:hashView(),mode:'week',anchor:today(),show:{substack:true,instagram:true,threads:true},
   folder:null,resWeek:iso(mondayOf(today())),pending:false,resDraft:{}};
 const settings=()=>{const s=S.settingsDoc||{};return {
   rubrics:Array.isArray(s.rubrics)?s.rubrics:DEFAULTS.rubrics,
@@ -612,7 +622,7 @@ function refreshMedia(){const box=document.getElementById('media');if(!box)retur
 /* ---------- editors ---------- */
 let ED=null;
 function syncFields(){if(!ED)return;document.querySelectorAll('#modal [data-f]').forEach(el=>{ED.draft[el.dataset.f]=el.value})}
-function defPlat(){return S.show.substack||!S.show.instagram?'substack':'instagram'}
+function defPlat(){return Object.keys(PLAT).find(p=>S.show[p])||'substack'}
 function openItem(id,date,preset){
   const st=settings();const it=id?S.items.find(x=>x.id===id):null;
   const d=it?JSON.parse(JSON.stringify(it)):Object.assign({platform:defPlat(),format:'',rubricId:'',title:'',date:date||iso(today()),time:'',status:'idea',text:'',link:'',media:[]},preset||{});
@@ -718,7 +728,7 @@ function firstRule(t,from,to){/* carousel goes on the day of the first reel of t
   const dn=`${WD[wdIdx(parse(anchor))]} ${parse(anchor).getDate()}`;
   if(!mine.length)return {ok:false,text:`${me} нужна в ${dn}, вместе с первым ${an}`};
   return mine.includes(anchor)?{ok:true,text:`${me} в день первого ${an} (${dn}) ✓`}:{ok:false,text:`${me} стоит не в тот день: нужна в ${dn}, вместе с первым ${an}`};}
-const platDot=p=>p?`<i class="pd" style="background:var(--${p==='instagram'?'ig':'ss'})"></i>`:'';
+const platDot=p=>p?`<i class="pd" style="background:${pcol(p)}"></i>`:'';
 const shortN=n=>n.length>8?n.slice(0,7)+'.':n;
 function dayGaps(ds){const p=settings().plan;if(!p.enabled)return [];const t=iso(today());const out=[];
   planTargets().filter(x=>x.period==='day'&&S.show[tgtPlat(x)]).forEach(x=>{
@@ -765,14 +775,13 @@ function plannerBar(bar){
   bar.innerHTML=`<button class="btn" data-act="today">Сегодня</button>
   <button class="ibtn" data-act="prev" aria-label="Назад">${ic('left')}</button><button class="ibtn" data-act="next" aria-label="Вперёд">${ic('right')}</button>
   <h1>Планировщик <span class="sub">${title}</span></h1><span class="grow"></span>
-  <button class="chip" data-act="toggleplat" data-v="substack" aria-pressed="${S.show.substack}"><span class="sw" style="background:var(--ss)"></span>Substack</button>
-  <button class="chip" data-act="toggleplat" data-v="instagram" aria-pressed="${S.show.instagram}"><span class="sw" style="background:var(--ig)"></span>Instagram</button>
+  ${Object.keys(PLAT).map(p=>`<button class="chip" data-act="toggleplat" data-v="${p}" aria-pressed="${!!S.show[p]}"><span class="sw" style="background:${pcol(p)}"></span>${PLAT[p]}</button>`).join('')}
   <button class="chip" data-act="togglenorms" aria-pressed="${n.enabled}" title="Показывать выполнение плана">План</button>
   <div class="seg"><button data-act="mode" data-v="week" aria-pressed="${S.mode==='week'}">Неделя</button><button data-act="mode" data-v="month" aria-pressed="${S.mode==='month'}">Месяц</button></div>`;}
 function visibleItems(){return S.items.filter(i=>S.show[i.platform])}
 const sortItems=(a,b)=>(a.time||'99').localeCompare(b.time||'99')||(a.createdAt||0)-(b.createdAt||0);
 function cardHtml(i){const t=i.title||(i.text||'').split('\n')[0]||'Без темы';const r=rubName(i.rubricId);
-  return `<div class="card ${i.platform==='instagram'?'instagram':'substack'} st-${esc(i.status)}" draggable="true" data-act="open" data-id="${esc(i.id)}" tabindex="0">
+  return `<div class="card ${PLAT[i.platform]?i.platform:'substack'} st-${esc(i.status)}" draggable="true" data-act="open" data-id="${esc(i.id)}" tabindex="0">
   <div class="meta">${esc(fmtName(i.format)||PLAT[i.platform])}<span class="sb">${i.status==='idea'?'идея'+(i.time?' · '+esc(i.time):''):i.status==='published'?'✓ '+esc(i.time||'вышло'):'⏱ '+esc(i.time||'в отложке')}</span></div>
   <div class="t">${esc(t)}</div>${r?`<div class="rb">${esc(r)}</div>`:''}${i.status==='idea'?`<button class="qa" data-act="setst" data-id="${esc(i.id)}" data-st="planned" title="Отправил в отложку: Запланировано" aria-label="Отметить как запланированное">⏱</button>`:i.status==='planned'?`<button class="qa" data-act="setst" data-id="${esc(i.id)}" data-st="published" title="Вышло: Опубликовано" aria-label="Отметить как опубликованное">✓</button>`:''}</div>`;}
 const LEGEND=`<span class="legend"><span><b class="lg-idea"></b>идея</span><span><b class="lg-planned"></b>в отложке</span><span><b class="lg-published"></b>вышло</span></span>`;
@@ -819,7 +828,7 @@ function wireDnD(c){
 function planSetupHtml(){
   const st=settings();const p=st.plan;
   /* settings */
-  const opts=sel=>['substack','instagram'].map(pl=>`<optgroup label="${PLAT[pl]}">${st.formats.filter(f=>f.platform===pl).map(f=>`<option value="f:${esc(f.id)}"${sel==='f:'+f.id?' selected':''}>${esc(f.name)}</option>`).join('')}${p.counters.filter(k=>k.platform===pl).map(k=>`<option value="c:${esc(k.id)}"${sel==='c:'+k.id?' selected':''}>${esc(k.name)} (счётчик)</option>`).join('')}</optgroup>`).join('');
+  const opts=sel=>Object.keys(PLAT).map(pl=>`<optgroup label="${PLAT[pl]}">${st.formats.filter(f=>f.platform===pl).map(f=>`<option value="f:${esc(f.id)}"${sel==='f:'+f.id?' selected':''}>${esc(f.name)}</option>`).join('')}${p.counters.filter(k=>k.platform===pl).map(k=>`<option value="c:${esc(k.id)}"${sel==='c:'+k.id?' selected':''}>${esc(k.name)} (счётчик)</option>`).join('')}</optgroup>`).join('');
   const tRow=x=>{const key=x.counter?'c:'+x.counter:'f:'+x.format;const pl=tgtPlat(x);
     const wf=!x.counter&&x.period==='week'?`<select class="inp" data-tgt="withFirst" data-id="${esc(x.id)}" aria-label="Привязка"><option value="">без привязки ко дню</option>${st.formats.filter(f=>f.platform===pl&&f.id!==x.format).map(f=>`<option value="${esc(f.id)}"${x.withFirst===f.id?' selected':''}>в день первого «${esc(f.name)}»</option>`).join('')}</select>`:'';
     return `<div class="lrow tgt"><select class="inp" data-tgt="key" data-id="${esc(x.id)}" aria-label="Что считать">${opts(key)}</select>
@@ -865,9 +874,9 @@ function renderTags(bar,c){
 
 /* ---------- Результаты: динамика по неделям ---------- */
 const fmtN=v=>v==null?'—':Number(v).toLocaleString('ru-RU',{maximumFractionDigits:1});
-const metPlat=m=>/^ig_/.test(m.id)||/^instagram/i.test(m.name)?'instagram':'substack';
+const metPlat=m=>/^ig_/.test(m.id)||/^instagram/i.test(m.name)?'instagram':/^th_/.test(m.id)||/^threads/i.test(m.name)?'threads':'substack';
 const metPct=m=>/%/.test(m.name);
-const metShort=m=>m.name.replace(/^(Substack|Instagram):\s*/i,'');
+const metShort=m=>m.name.replace(/^(Substack|Instagram|Threads):\s*/i,'');
 function resWeeks(){const ids=S.metrics.map(x=>x.id).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)).sort();if(!ids.length)return [];
   const out=[];for(let d=parse(ids[0]);iso(d)<=ids[ids.length-1];d=addDays(d,7))out.push(iso(d));return out;}
 function metVal(w,id){const d=S.metrics.find(x=>x.id===w);const v=d&&d.values?d.values[id]:null;return typeof v==='number'?v:null}
@@ -912,7 +921,7 @@ function renderResults(bar,c){
     <div class="row">${st.metrics.map(m=>`<label class="field"><span>${platDot(metPlat(m))} ${esc(m.name)}</span><input class="inp" type="number" step="any" data-metric="${esc(m.id)}" value="${draft[m.id]!=null?esc(draft[m.id]):vals[m.id]!=null?esc(vals[m.id]):''}"></label>`).join('')}</div>
     <div class="lrow" style="margin-top:12px"><button class="btn primary" data-act="ressave">Сохранить неделю</button>${doc?'<span class="hint">Данные за эту неделю уже внесены, можно поправить.</span>':''}</div></div>`;
   if(!weeks.length){c.innerHTML=reminderBanner()+entry+'<div class="empty">Динамика появится после первой внесённой недели.</div>';return}
-  const card=m=>{const pl=metPlat(m),col=pl==='instagram'?'var(--ig)':'var(--ss)',pct=metPct(m);
+  const card=m=>{const pl=metPlat(m),col=pcol(pl),pct=metPct(m);
     const series=weeks.map(x=>metVal(x,m.id));const idx=series.map((v,i)=>v!=null?i:-1).filter(i=>i>=0);
     const li=idx[idx.length-1],pi=idx[idx.length-2],fi=idx[0];
     const cur=li!=null?series[li]:null,prev=pi!=null?series[pi]:null,first=fi!=null&&fi!==li?series[fi]:null;
@@ -920,12 +929,12 @@ function renderResults(bar,c){
       <div class="mv">${fmtN(cur)}${pct&&cur!=null?'<small>%</small>':''}<span class="mw">${li!=null?'неделя с '+shortDate(weeks[li]):''}</span></div>
       <div class="mds">${deltaHtml(cur,prev,pct,pi!=null&&li-pi>1?`к ${shortDate(weeks[pi])}`:'за неделю')}${first!=null&&fi!==pi?deltaHtml(cur,first,pct,'с '+shortDate(weeks[fi])):''}</div>
       ${lineChart(weeks,series,col,pct)}</div>`};
-  const groups=['substack','instagram'].map(pl=>{const ms=st.metrics.filter(m=>metPlat(m)===pl);return ms.length?`<h2 class="grp">${platDot(pl)} ${PLAT[pl]}</h2><div class="mgrid">${ms.map(card).join('')}</div>`:''}).join('');
+  const groups=Object.keys(PLAT).map(pl=>{const ms=st.metrics.filter(m=>metPlat(m)===pl);return ms.length?`<h2 class="grp">${platDot(pl)} ${PLAT[pl]}</h2><div class="mgrid">${ms.map(card).join('')}</div>`:''}).join('');
   /* growth of followers between entered weeks */
   const growth=(id,pl)=>{const m=st.metrics.find(x=>x.id===id);if(!m)return '';const pts=weeks.map(x=>[x,metVal(x,id)]).filter(x=>x[1]!=null);
     const labels=[],vs=[];for(let i=1;i<pts.length;i++){labels.push(shortDate(pts[i][0]).replace(/ (\S{3})\S*/,' $1')+(Math.round((parse(pts[i][0])-parse(pts[i-1][0]))/6048e5)>1?' *':''));vs.push(pts[i][1]-pts[i-1][1])}
-    return `<div class="mcard"><div class="mhd">${platDot(pl)}<span class="n">${esc(PLAT[pl])}: ${esc(metShort(m).toLowerCase())}</span></div>${barChart(labels,vs,pl==='instagram'?'var(--ig)':'var(--ss)')}</div>`};
-  const gr=[growth('ss_free','substack'),growth('ss_followers','substack'),growth('ig_followers','instagram')].join('');
+    return `<div class="mcard"><div class="mhd">${platDot(pl)}<span class="n">${esc(PLAT[pl])}: ${esc(metShort(m).toLowerCase())}</span></div>${barChart(labels,vs,pcol(pl))}</div>`};
+  const gr=[growth('ss_free','substack'),growth('ss_followers','substack'),growth('ig_followers','instagram'),growth('th_followers','threads')].join('');
   const tbl=`<div class="panel scroll-x"><h2>Все недели</h2><table class="tbl"><thead><tr><th>Неделя</th>${st.metrics.map(m=>`<th>${esc(m.name)}</th>`).join('')}</tr></thead><tbody>
     ${weeks.slice().reverse().map((x,ri,arr)=>{const has=S.metrics.some(d=>d.id===x);return `<tr${has?'':' class="miss"'}><td>${shortDate(x)}</td>${st.metrics.map(m=>{const v=metVal(x,m.id);const pv=arr[ri+1]?metVal(arr[ri+1],m.id):null;const d=v!=null&&pv!=null?v-pv:null;
       return `<td>${v==null?(has?'—':'не внесено'):fmtN(v)}${d?`<small class="${d>0?'up':'down'}">${d>0?'+':''}${fmtN(d)}</small>`:''}</td>`}).join('')}</tr>`}).join('')}</tbody></table>
@@ -946,7 +955,7 @@ function renderLists(bar,c){
   <div class="panel"><h2>Рубрики</h2>${st.rubrics.length?'':'<div class="hint">Рубрик пока нет.</div>'}${st.rubrics.map(r=>`<div class="lrow"><input class="inp" value="${esc(r.name)}" data-rubname="${esc(r.id)}" aria-label="Рубрика"><button class="ibtn" data-act="rubdel" data-id="${esc(r.id)}" aria-label="Удалить рубрику">${ic('del')}</button></div>`).join('')}
     <div class="lrow"><input class="inp" id="rubnew" placeholder="Новая рубрика"><button class="btn sm" data-act="rubadd">Добавить</button></div>
     <div class="hint">Изменения названия сразу видны во всех публикациях.</div></div>
-  <div class="panel"><h2>Форматы</h2>${fcol('substack')}${fcol('instagram')}</div>
+  <div class="panel"><h2>Форматы</h2>${Object.keys(PLAT).map(fcol).join('')}</div>
   <div class="panel"><h2>Результаты</h2>
     <h3>Что вносить раз в неделю</h3>${st.metrics.map(m=>`<div class="lrow"><input class="inp" value="${esc(m.name)}" data-metname="${esc(m.id)}" aria-label="Показатель"><button class="ibtn" data-act="metdel" data-id="${esc(m.id)}" aria-label="Удалить показатель">${ic('del')}</button></div>`).join('')}
     <div class="lrow"><input class="inp" id="metnew" placeholder="Новый показатель"><button class="btn sm" data-act="metadd">Добавить</button></div>
